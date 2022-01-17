@@ -22,29 +22,27 @@ public class KafkaProducerExample {
 
     public static void main(String[] args) throws InterruptedException, IOException, URISyntaxException {
         Random rnd = new Random();
-        Workload wrld = new Workload();
+        //Workload wrld = new Workload();
         KafkaProducerConfig config = KafkaProducerConfig.fromEnv();
         log.info(KafkaProducerConfig.class.getName() + ": {}", config.toString());
         Properties props = KafkaProducerConfig.createProperties(config);
         int delay = config.getDelay();
-        KafkaProducer<String, Customer> producer = new KafkaProducer<String,Customer>(props);
+        KafkaProducer<String, Customer> producer = new KafkaProducer<String, Customer>(props);
         log.info("Sending {} messages ...", config.getMessageCount());
         boolean blockProducer = System.getenv("BLOCKING_PRODUCER") != null;
+        int eventsPerSeconds = Integer.parseInt(System.getenv("Events_Per_SEC"));
         AtomicLong numSent = new AtomicLong(0);
         // over all the workload
         long key = 0L;
-        for (int i = 0; i < wrld.getDatax().size(); i++) {
+        long iteration = 0;
 
-            //while(true){
-            log.info("sending a batch of authorizations of size:{}",
-                    Math.ceil(wrld.getDatay().get(i)));
-            //   loop over each sample
-            for (long j = 0; j < Math.ceil(wrld.getDatay().get(i)); j++) {
-
+        while (true) {
+            for (int j = 0; j < eventsPerSeconds; j++) {
+                log.info(" Iteration {} sending {} events per second", iteration, eventsPerSeconds);
                 Customer custm = new Customer(rnd.nextInt(), UUID.randomUUID().toString());
                 Future<RecordMetadata> recordMetadataFuture =
                         producer.send(new ProducerRecord<String, Customer>(config.getTopic(),
-                                null, null, String.valueOf(key)  ,  custm));
+                                null, null, String.valueOf(key), custm));
                 log.info("Sending the following key {} with the following customer{}", key, custm.toString());
                 key++;
                 if (blockProducer) {
@@ -65,3 +63,4 @@ public class KafkaProducerExample {
         }
     }
 }
+
