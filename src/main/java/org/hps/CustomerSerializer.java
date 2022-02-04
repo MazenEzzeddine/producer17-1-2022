@@ -12,13 +12,6 @@ public class CustomerSerializer implements Serializer<Customer> {
     }
 
 
-/**
- We are serializing Customer as:
- 4 byte int representing customerId
- 4 byte int representing length of customerName in UTF-8 bytes (0 if
- name is Null)
- N bytes representing customerName in UTF-8
- */
     @Override
     public byte[] serialize(String topic, Customer data) {
         try {

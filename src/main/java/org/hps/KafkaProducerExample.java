@@ -37,12 +37,12 @@ public class KafkaProducerExample {
         long iteration = 0;
 
         while (true) {
+            log.info(" Iteration {} sending {} events per second", iteration, eventsPerSeconds);
             for (int j = 0; j < eventsPerSeconds; j++) {
-                log.info(" Iteration {} sending {} events per second", iteration, eventsPerSeconds);
                 Customer custm = new Customer(rnd.nextInt(), UUID.randomUUID().toString());
                 Future<RecordMetadata> recordMetadataFuture =
                         producer.send(new ProducerRecord<String, Customer>(config.getTopic(),
-                                null, null, String.valueOf(key), custm));
+                                null, null, UUID.randomUUID().toString(), custm));
                 log.info("Sending the following key {} with the following customer{}", key, custm.toString());
                 key++;
                 if (blockProducer) {
@@ -59,6 +59,7 @@ public class KafkaProducerExample {
                 }
                 log.info("sleeping for {} seconds", delay);
             }
+            iteration++;
             Thread.sleep(delay);
         }
     }
