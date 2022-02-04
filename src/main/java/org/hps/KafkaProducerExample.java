@@ -57,9 +57,9 @@ public class KafkaProducerExample {
                     // Increment number of sent messages for non blocking producer
                     numSent.incrementAndGet();
                 }
-                log.info("sleeping for {} seconds", delay);
             }
             iteration++;
+            log.info("sleeping for {} seconds", delay);
             Thread.sleep(delay);
         }
     }
